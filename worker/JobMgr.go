@@ -40,17 +40,17 @@ func (JobMgr *JobMgr) watchJobs(err error) {
 		var (
 			waitChan   clientv3.WatchChan
 			watchResp  clientv3.WatchResponse
-			watchEvent clientv3.Event
+			watchEvent *clientv3.Event
 			job        *common.Job
 			jobEvent   *common.JobEvent
 			jobName    string
 		)
 		watchStartRevision := getResp.Header.Revision + 1
 		//start watcher
-		waitChan = JobMgr.watcher.Watch(context.TODO(), common.JOB_SAVE_DIR, clientv3.WithRev(watchStartRevision))
+		waitChan = JobMgr.watcher.Watch(context.TODO(), common.JOB_SAVE_DIR, clientv3.WithRev(watchStartRevision), clientv3.WithPrefix())
 		//处理监听事件
 		for watchResp = range waitChan {
-			for watchEvent = range watchResp.Events {
+			for _, watchEvent = range watchResp.Events {
 				switch watchEvent.Type {
 				case mvccpb.PUT: //save
 					if job, err = common.UnpackJob(watchEvent.Kv.Value); err != nil {
