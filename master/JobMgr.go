@@ -54,13 +54,11 @@ func (JobMgr *JobMgr) SaveJob(job *common.Job) (oldJob *common.Job, err error) {
 		return
 	}
 	//如果是更新，那么返回旧值
-	oldJobObj := common.Job{}
 	if putResp.PrevKv != nil {
 		//对旧值做一个反序列化
-		if err := json.Unmarshal(putResp.PrevKv.Value, &oldJobObj); err != nil {
+		if err := json.Unmarshal(putResp.PrevKv.Value, &oldJob); err != nil {
 			err = nil
 		}
-		oldJob = &oldJobObj
 	}
 	return
 
@@ -82,17 +80,36 @@ func (JobMgr *JobMgr) DelJob(jobName string) (oldJob *common.Job, err error) {
 		return
 	}
 	//如果是更新，那么返回旧值
-	oldJobObj := common.Job{}
-
-	//oldJobObjs := []common.Job{}
 	if len(delResp.PrevKvs) != 0 {
 		//对旧值做一个反序列化
-		if err = json.Unmarshal(delResp.PrevKvs[0].Value, &oldJobObj); err != nil {
+		if err = json.Unmarshal(delResp.PrevKvs[0].Value, &oldJob); err != nil {
 			err = nil
 			return
 		}
-		oldJob = &oldJobObj
 	}
 	return
 
+}
+
+//列举任务
+func (JobMgr *JobMgr) ListJob() (jobList []*common.Job, err error) {
+	var (
+		getResp *clientv3.GetResponse
+	)
+	dirKey := common.JOB_SAVE_DIR
+
+	if getResp, err = JobMgr.kv.Get(context.TODO(), dirKey, clientv3.WithPrefix()); err != nil {
+		return
+	} else {
+		//jobList := make([]*common.Job, 0)
+		for _, kvPair := range getResp.Kvs {
+			job := &common.Job{}
+			if err := json.Unmarshal(kvPair.Value, job); err != nil {
+				err = nil
+				continue
+			}
+			jobList = append(jobList, job)
+		}
+	}
+	return
 }

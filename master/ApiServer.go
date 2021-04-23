@@ -91,12 +91,37 @@ ERR:
 	return
 }
 
+// 任务列表
+func handleJobList(resp http.ResponseWriter, req *http.Request) {
+	var (
+		jobList []*common.Job
+		err     error
+		bytes   []byte
+	)
+	jobList, err = G_jobMgr.ListJob()
+	if err != nil {
+		goto ERR
+	}
+
+	// response
+	if bytes, err = common.BuildResponse(0, "success", jobList); err == nil {
+		resp.Write(bytes)
+	}
+	return
+ERR:
+	if bytes, err = common.BuildResponse(-1, err.Error(), nil); err == nil {
+		resp.Write(bytes)
+	}
+	return
+}
+
 //初始化服务
 func InitApiServer() (err error) {
 	//配置路由
 	mux := http.NewServeMux()
 	mux.HandleFunc("/job/save", handleJobSave)
 	mux.HandleFunc("/job/delete", handleJobDelete)
+	mux.HandleFunc("/job/list", handleJobList)
 	//启动TCP监听
 	listener, err := net.Listen("tcp", ":"+strconv.Itoa(G_config.ApiPort))
 	if err != nil {
