@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gocrontab/master"
 	"runtime"
+	"time"
 )
 
 var (
@@ -30,18 +31,24 @@ func main() {
 	//初始化线程
 	initEnv()
 
-	//加载配置
 	var (
 		err error
 	)
+	//加载配置
 	if err = master.InitConfig(confFile); err != nil {
 		goto ERR
 	}
-
+	if err = master.InitJobMgr(); err != nil {
+		goto ERR
+	}
+	//启动api服务
 	if err = master.InitApiServer(); err != nil {
 		goto ERR
 	}
 	//正常退出
+	for {
+		time.Sleep(1 * time.Second)
+	}
 	return
 ERR:
 	//异常退出
