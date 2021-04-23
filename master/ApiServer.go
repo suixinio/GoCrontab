@@ -152,6 +152,10 @@ func InitApiServer() (err error) {
 	mux.HandleFunc("/job/list", handleJobList)
 	mux.HandleFunc("/job/kill", handleJobKill)
 
+	staticDir := http.Dir(G_config.WebRoot)
+	staticHandler := http.FileServer(staticDir)
+	mux.Handle("/", http.StripPrefix("/", staticHandler))
+
 	//启动TCP监听
 	listener, err := net.Listen("tcp", ":"+strconv.Itoa(G_config.ApiPort))
 	if err != nil {
