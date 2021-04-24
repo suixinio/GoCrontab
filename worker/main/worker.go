@@ -35,22 +35,32 @@ func main() {
 		err error
 	)
 	//加载配置
+	fmt.Println("InitConfig")
 	if err = worker.InitConfig(confFile); err != nil {
 		goto ERR
 	}
+	//启动执行器
+	fmt.Println("InitExecutor")
+	if err = worker.InitExecutor(); err != nil {
+		goto ERR
+	}
+	//启动调度器
+	fmt.Println("InitScheduler")
+	if err = worker.InitScheduler(); err != nil {
+		goto ERR
+	}
+	fmt.Println("InitJobMgr")
 	if err = worker.InitJobMgr(); err != nil {
 		goto ERR
 	}
-	//启动api服务
-	//if err = master.InitApiServer(); err != nil {
-	//	goto ERR
-	//}
 	//正常退出
+	fmt.Println("Loop")
 	for {
 		time.Sleep(1 * time.Second)
 	}
 	return
 ERR:
 	//异常退出
+	fmt.Println("异常")
 	fmt.Println(err)
 }

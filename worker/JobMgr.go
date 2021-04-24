@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"fmt"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	"go.etcd.io/etcd/client/v3"
 	"gocrontab/common"
@@ -20,19 +21,26 @@ var (
 )
 
 //监听任务变化
-func (JobMgr *JobMgr) watchJobs(err error) {
+func (JobMgr *JobMgr) watchJobs() (err error) {
 	var (
 		getResp *clientv3.GetResponse
 	)
 	//get /cron/jobs/   get current revision
 	if getResp, err = JobMgr.kv.Get(context.TODO(), common.JOB_SAVE_DIR, clientv3.WithPrefix()); err != nil {
+		fmt.Println(err)
 		return
 	}
+	// 当前有哪些任务
 	for _, kvpair := range getResp.Kvs {
 		//反序列化
 		if job, err := common.UnpackJob(kvpair.Value); err == nil {
 			//	todo ，同步给scheduler（调度协程）
-			job = job
+			jobEvent := common.BuildJobEvent(common.JOB_EVENT_SAVE, job)
+			//fmt.Println(*jobEvent)
+			G_scheduler.PushJobEvent(jobEvent)
+			//job = job
+		} else {
+			fmt.Println(err)
 		}
 	}
 	//watch event
@@ -57,7 +65,7 @@ func (JobMgr *JobMgr) watchJobs(err error) {
 						continue
 					}
 					jobEvent = common.BuildJobEvent(common.JOB_EVENT_SAVE, job)
-					jobEvent = jobEvent
+					//jobEvent = jobEvent
 				//todo unpack，推送一个更新时间给scheduler
 				case mvccpb.DELETE: //delete
 					//delete
@@ -65,12 +73,13 @@ func (JobMgr *JobMgr) watchJobs(err error) {
 					job = &common.Job{Name: jobName}
 					//构造删除event
 					jobEvent = common.BuildJobEvent(common.JOB_EVENT_DELETE, job)
-
 				}
-				//	todo G_scheduler.PushJobEvent(jobEvent)
+				//推送给scheduler
+				G_scheduler.PushJobEvent(jobEvent)
 			}
 		}
 	}()
+	return
 }
 
 func InitJobMgr() (err error) {
@@ -92,5 +101,7 @@ func InitJobMgr() (err error) {
 		lease:   lease,
 		watcher: watcher,
 	}
+	// 启动任务监听
+	G_jobMgr.watchJobs()
 	return
 }

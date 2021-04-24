@@ -3,6 +3,6 @@
   "etcdEndpoints": [
     "127.0.0.1:2379"
   ],
-  "etcd连接超时": "单位毫秒",
-  "etcdDialTimeout": 5000
+  "etcd连接超时": "单位毫秒秒",
+  "etcdDialTimeout": 500
 }
