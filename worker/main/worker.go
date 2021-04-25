@@ -49,6 +49,7 @@ func main() {
 	if err = worker.InitScheduler(); err != nil {
 		goto ERR
 	}
+	//启动任务管理器
 	fmt.Println("InitJobMgr")
 	if err = worker.InitJobMgr(); err != nil {
 		goto ERR

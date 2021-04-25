@@ -66,7 +66,6 @@ func (JobMgr *JobMgr) watchJobs() (err error) {
 					}
 					jobEvent = common.BuildJobEvent(common.JOB_EVENT_SAVE, job)
 					//jobEvent = jobEvent
-				//todo unpack，推送一个更新时间给scheduler
 				case mvccpb.DELETE: //delete
 					//delete
 					jobName = common.ExtractJobName(string(watchEvent.Kv.Key))
@@ -103,5 +102,11 @@ func InitJobMgr() (err error) {
 	}
 	// 启动任务监听
 	G_jobMgr.watchJobs()
+	return
+}
+
+//创建任务执行锁
+func (jobMgr *JobMgr) CreateJobLock(jobName string) (jobLock *JobLock) {
+	jobLock = InitJobLock(jobName, jobMgr.kv, jobMgr.lease)
 	return
 }
