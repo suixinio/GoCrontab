@@ -83,7 +83,7 @@ func (jobLock *JobLock) TryLock() (err error) {
 	if !txnResp.Succeeded {
 		//	锁占用
 		fmt.Println("锁占用", jobLock.jobName, time.Now())
-		err = common.ERR_LOCK_ALREAY_REQUIRED
+		err = common.ERR_LOCK_ALREADY_REQUIRED
 		goto FAIL
 	}
 	//抢锁成功

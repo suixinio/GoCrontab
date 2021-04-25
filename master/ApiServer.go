@@ -2,6 +2,7 @@ package master
 
 import (
 	"encoding/json"
+	"fmt"
 	"gocrontab/common"
 	"net"
 	"net/http"
@@ -143,6 +144,47 @@ ERR:
 	return
 }
 
+//查询任务日志
+func handleJobLog(resp http.ResponseWriter, req *http.Request) {
+	var (
+		err        error
+		name       string
+		skipParam  string
+		limitParam string
+		skip       int
+		limit      int
+		logArr     []*common.JobLog
+		bytes      []byte
+	)
+	if err = req.ParseForm(); err != nil {
+		goto ERR
+	}
+	//获取请求参数
+	name = req.Form.Get("name")
+	skipParam = req.Form.Get("skip")
+	limitParam = req.Form.Get("limit")
+	if skip, err = strconv.Atoi(skipParam); err != nil {
+		skip = 0
+	}
+	if limit, err = strconv.Atoi(limitParam); err != nil {
+		limit = 20
+	}
+	if logArr, err = G_logMgr.ListLog(name, skip, limit); err != nil {
+		goto ERR
+	}
+	// response
+	if bytes, err = common.BuildResponse(0, "success", logArr); err == nil {
+		resp.Write(bytes)
+	}
+	return
+ERR:
+	if bytes, err = common.BuildResponse(-1, err.Error(), nil); err == nil {
+		fmt.Println(string(bytes))
+		resp.Write(bytes)
+	}
+	return
+}
+
 //初始化服务
 func InitApiServer() (err error) {
 	//配置路由
@@ -151,6 +193,7 @@ func InitApiServer() (err error) {
 	mux.HandleFunc("/job/delete", handleJobDelete)
 	mux.HandleFunc("/job/list", handleJobList)
 	mux.HandleFunc("/job/kill", handleJobKill)
+	mux.HandleFunc("/job/log", handleJobLog)
 
 	staticDir := http.Dir(G_config.WebRoot)
 	staticHandler := http.FileServer(staticDir)
