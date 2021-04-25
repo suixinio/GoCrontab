@@ -20,20 +20,29 @@ var (
 //处理任务事件
 func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 	var (
-		jobSchedulePan *common.JobSchedulePlan
-		jobExisted     bool
-		err            error
+		jobSchedulePlan *common.JobSchedulePlan
+		jobExecuteInfo  *common.JobExecuteInfo
+		jobExecuting    bool
+		jobExisted      bool
+		err             error
 	)
 	switch jobEvent.EventType {
 	case common.JOB_EVENT_SAVE:
-		if jobSchedulePan, err = common.BuildJobSchedulePlan(jobEvent.Job); err != nil {
+		if jobSchedulePlan, err = common.BuildJobSchedulePlan(jobEvent.Job); err != nil {
 			return
 		}
-		scheduler.jobPlanTable[jobEvent.Job.Name] = jobSchedulePan
+		scheduler.jobPlanTable[jobEvent.Job.Name] = jobSchedulePlan
 
 	case common.JOB_EVENT_DELETE:
-		if jobSchedulePan, jobExisted = scheduler.jobPlanTable[jobEvent.Job.Name]; jobExisted {
+		if jobSchedulePlan, jobExisted = scheduler.jobPlanTable[jobEvent.Job.Name]; jobExisted {
 			delete(scheduler.jobPlanTable, jobEvent.Job.Name)
+		}
+	case common.JOB_EVENT_KILL:
+		// 强杀任务事件
+		// 取消掉Command执行，判断任务是否在执行中
+		if jobExecuteInfo, jobExecuting = scheduler.jobExecutingTable[jobEvent.Job.Name]; jobExecuting {
+			// 触发command杀死shell子进程，任务得到退出
+			jobExecuteInfo.CancelFunc()
 		}
 	}
 }

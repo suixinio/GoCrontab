@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/gorhill/cronexpr"
 	"strings"
@@ -24,9 +25,10 @@ type JobSchedulePlan struct {
 
 //任务执行状态
 type JobExecuteInfo struct {
-	Job      *Job
-	PlanTime time.Time //理论上的调度时间
-	RealTime time.Time //实际上的调度时间
+	Job        *Job
+	PlanTime   time.Time          //理论上的调度时间
+	RealTime   time.Time          //实际上的调度时间
+	CancelFunc context.CancelFunc //取消任务
 }
 
 //http response
@@ -138,4 +140,12 @@ func BuildJobExecuteInfo(jobSchedulePlan *JobSchedulePlan) (jobExecuteInof *JobE
 		RealTime: time.Now(),               //真实调度时间
 	}
 	return
+}
+
+// 提取worker的IP
+func ExtractWorkerIP(regKey string) string {
+	return strings.TrimPrefix(regKey, JOB_WORKER_DIR)
+}
+func ExtractKillerName(killKey string) string {
+	return strings.TrimPrefix(killKey, JOB_KILLER_DIR)
 }

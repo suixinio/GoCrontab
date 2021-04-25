@@ -42,6 +42,11 @@ func main() {
 	if err = master.InitLogMgr(); err != nil {
 		goto ERR
 	}
+	//服务发现
+	if err = master.InitWorkerMgr(); err != nil {
+		goto ERR
+	}
+	
 	if err = master.InitJobMgr(); err != nil {
 		goto ERR
 	}
