@@ -1,5 +1,7 @@
 ## 搭建与连接mongodb
+
 ### 安装步骤
+
 - 下载 tgz文件
 - 解压
 
@@ -7,29 +9,42 @@
 tar -zxvf mongodb-linux-x86_64-rhe170-4.0.0.tgz
 cd mongodb-linux-x86_64-rhe170-4.0.0
 ```
+
 - 创建数据库目录
+
 ```
 mkdir data
 ```
+
 - 启动单机版mongod
+
 ```
 nohup bin/mongod --dbpath=./data --bind_ip=0.0.0.0 &
 ```
+
 - 启动mongo
+
 ```
 bin/mongo
 ```
+
 ### 操作
+
 - 查看,使用数据库
+
 ```
 show databases;
 use my_db;
 ```
+
 - 查看帮助
+
 ```
 db.help();
 ```
+
 - 建表,查看表
+
 ```
 db.createCollection("my_collection");
 show collections;
@@ -37,20 +52,26 @@ show collections;
 ```
 
 - 插入数据
+
 ```
 db.my_collection.insertOne({uid:1000,name:"xiaoming"})
 ```
+
 - 查找
+
 ```
 db.my_collection.find();
 db.my_collection.find({uid:1000});
 ```
+
 - 建立索引
+
 ```
 db.my_collection.createIndex({uid:1});
 ```
 
 - 连接数据库
+
 ```
 package main
 
@@ -88,7 +109,9 @@ func main()  {
 ```
 
 ###
+
 5-4 InsertOne写入单行记录
+
 ```
 package main
 
@@ -164,6 +187,7 @@ func main() {
 ```
 
 ### 5-5 InsertMany写入多行记录
+
 ```
 package main
 

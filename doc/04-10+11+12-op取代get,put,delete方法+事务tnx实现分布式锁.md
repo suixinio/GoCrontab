@@ -1,4 +1,5 @@
-##  4-10    op取代get,put,delete方法
+## 4-10    op取代get,put,delete方法
+
 ```
 package main
 
@@ -62,6 +63,7 @@ func main() {
 ```
 
 ## 4-11/12 事务tnx实现分布式锁
+
 ```
 package main
 

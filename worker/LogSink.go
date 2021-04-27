@@ -78,6 +78,15 @@ func (logSink *LogSink) writeLoop() {
 	}
 }
 
+// 发送日志
+func (logSink *LogSink) Append(jobLog *common.JobLog) {
+	select {
+	case logSink.logChan <- jobLog:
+	default:
+		// 队列满了就丢弃
+	}
+}
+
 func InitLogSink() (err error) {
 	var (
 		client *mongo.Client
@@ -103,13 +112,4 @@ func InitLogSink() (err error) {
 	// 启动一个mongodb处理协程
 	go G_logSink.writeLoop()
 	return
-}
-
-// 发送日志
-func (logSink *LogSink) Append(jobLog *common.JobLog) {
-	select {
-	case logSink.logChan <- jobLog:
-	default:
-		// 队列满了就丢弃
-	}
 }

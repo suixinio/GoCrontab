@@ -1,9 +1,13 @@
 ## 7-8 job-kill接口开发: 在etcd中标记结束任务
+
 - 路由
+
 ```
 mux.HandleFunc("/job/kill", handleJobKill)
 ```
+
 - 实现
+
 ```
 //强制杀死某个任务
 func handleJobKill(resp http.ResponseWriter, req *http.Request) {
@@ -31,7 +35,9 @@ func handleJobKill(resp http.ResponseWriter, req *http.Request) {
 	return
 }
 ```
+
 - 实现KillJob
+
 ```
 //  杀死任务
 func (jobMgr *JobMgr) KillJob(name string) (err error) {

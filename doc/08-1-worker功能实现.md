@@ -1,14 +1,16 @@
 ## 8-1 worker功能概况
 
-
 ### 项目结构
+
 ```
 go-crontab
     /master
     /worker
     /common
 ```
-###  工作流程
+
+### 工作流程
+
 ```
 1, 从etcd中把job同步到内存中
 2，实现调度模块，基于cron表达式调度N个job
@@ -18,6 +20,7 @@ go-crontab
 ```
 
 ## 8-2 启动后从etcd获取任务列表
+
 ```
 // 监听任务变化
 func (jobMgr *JobMgr) watchJobs() (err error) {
@@ -84,8 +87,11 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 }
 
 ```
+
 ## 8-3 监听etcd中任务变化
+
 ## 8-4 实现任务调度协程（上）
+
 ```
 package worker
 
@@ -292,7 +298,9 @@ func (scheduler *Scheduler) PushJobResult(jobResult *common.JobExecuteResult) {
 ```
 
 ## 8-5 实现任务调度协程（下）
+
 ## 8-6 实现任务执行模块（上）
+
 ## 8-7 实现任务执行模块（下）
 
 ```
@@ -376,7 +384,9 @@ func InitExecutor() (err error) {
 ```
 
 ## 8-8 利用分布式锁避免任务并发（上）
+
 ## 8-9 利用分布式锁避免任务并发（下）
+
 ```
 package worker
 
@@ -495,11 +505,15 @@ func (jobLock *JobLock) Unlock() {
 	}
 }
 ```
+
 ## 8-10 监听etcd中的强杀任务通知
 
 ## 8-11 保存任务日志到mongodb(上)
+
 ## 8-12 保存任务日志到mongodb(中)
+
 ## 8-13 保存任务日志到mongodb(下)
+
 ```
 package worker
 

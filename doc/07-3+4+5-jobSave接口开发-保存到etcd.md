@@ -1,6 +1,8 @@
 ## 7-1/2 创建项目与搭建基本框架
+
 - 新建Common包
 - 新建Protocol.go 存储Job struct
+
 ```
 master
     main
@@ -12,7 +14,8 @@ master
 common
     Protocol.go    
 ```
-- func (jobMgr *JobMgr) SaveJob(job *common.Job) (oldJob *common.Job, err error) 
+
+- func (jobMgr *JobMgr) SaveJob(job *common.Job) (oldJob *common.Job, err error)
 
 ```
 package master

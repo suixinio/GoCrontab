@@ -1,9 +1,13 @@
 ## 7-6 job delete接口开发: 从etcd中删除任务
+
 - 路由
+
 ```
 mux.HandleFunc("/job/delete", handleJobDelete)
 ```
+
 - 实现
+
 ```
 //删除任务
 func (jobMgr *JobMgr) DeleteJob(name string) (oldJob *common.Job, err error) {
@@ -33,6 +37,7 @@ func (jobMgr *JobMgr) DeleteJob(name string) (oldJob *common.Job, err error) {
 	return
 }
 ```
+
 ```
 //删除任务接口
 //POST /job/delete name=job1

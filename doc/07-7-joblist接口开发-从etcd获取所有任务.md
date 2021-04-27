@@ -1,9 +1,13 @@
 ## 7-7 job-list接口开发：从etcd获取所有任务
+
 - 路由
+
 ```
 mux.HandleFunc("/job/list", handleJobList)
 ```
+
 - 实现handleJobList()
+
 ```
 //列举所有crontab任务
 func handleJobList(resp http.ResponseWriter, req *http.Request) {
@@ -24,7 +28,9 @@ func handleJobList(resp http.ResponseWriter, req *http.Request) {
 }
 
 ```
+
 - 实现ListJobs()
+
 ```
 //列举任务
 func (jobMgr *JobMgr) ListJobs() (jobList []*common.Job, err error) {
